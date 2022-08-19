@@ -8,8 +8,6 @@ let questionElement = document.querySelector('#question')
 let question = document.querySelector('#question')
 startBtn.addEventListener('click', startGame)
 
-// const shuffledQuestions, currentQuestionIndex
-
 // When page loads it hides the question section
 window.onload = (event) => {
   questionHide.classList.add('hide')
@@ -24,6 +22,7 @@ function startGame() {
   nextBtn.classList.remove('hide')
   selectQuestion()
   selectAnswer()
+
 }
 
 // Initial Time display
@@ -46,29 +45,6 @@ function hideOnStart() {
   startPage.classList.add('hide');
   startButton.classList.add('hide')
 }
-
-
-// function showQuestion(question) {
-//   questionElement.innerText = question.question
-//   question.answers.forEach(answer => {
-//     const button = document.createElement('button')
-//     button.innerText = answer.text
-//     button.classList.add('btn')
-//     if (answer.correct) {
-//       button.dataset.correct = answer.correct
-//     }
-//     button.addEventListener('click', selectAnswer)
-//     answerButtonsElement.appendChild(button)
-//   })
-// }
-
-// function setNextQuestion() {
-//   showQuestion(shuffledQuestions[currentQuestionIndex])
-// }
-
-// function selectAnswer() {
-
-// }
 
 // Array of questions 
 const questions = [
@@ -112,7 +88,7 @@ const questions = [
 
 
 function selectQuestion() {
-  question.textContent = questions[0].question;
+  question.textContent = questions[index].question;
 }
 
 function selectAnswer() {
@@ -121,10 +97,11 @@ function selectAnswer() {
   answerThree = document.querySelector('#b3')
   answerFour = document.querySelector('#b4')
 
-  answerOne.textContent = questions[0].answers[0].text
-  answerTwo.textContent = questions[0].answers[1].text
-  answerThree.textContent = questions[0].answers[2].text
-  answerFour.textContent = questions[0].answers[3].text
+  answerOne.textContent = questions[index].answers[0].text
+  answerTwo.textContent = questions[index].answers[1].text
+  answerThree.textContent = questions[index].answers[2].text
+  answerFour.textContent = questions[index].answers[3].text
 }
 
+let index = Math.floor(Math.random() * 10);
 
