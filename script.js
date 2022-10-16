@@ -1,107 +1,296 @@
-let startBtn = document.querySelector('#startBtn')
-let timeEl = document.querySelector('#timer')
-let questionHide = document.querySelector('#question-container')
-let startButton = document.querySelector('#startBtn')
-let startPage = document.querySelector('#start-page')
-let nextBtn = document.querySelector('#next-btn')
-let questionElement = document.querySelector('#question')
-let question = document.querySelector('#question')
-startBtn.addEventListener('click', startGame)
+var containerQuestionEl = document.getElementById("question-container");
+var containerStartEl = document.getElementById("starter-container");
+var containerEndEl = document.getElementById("end-container")
+var containerScoreEl = document.getElementById("score-banner")
+var formInitials = document.getElementById("initials-form")
+var containerHighScoresEl = document.getElementById("high-score-container")
+var ViewHighScoreEl = document.getElementById("view-high-scores")
+var listHighScoreEl = document.getElementById("high-score-list")
+var correctEl = document.getElementById("correct")
+var wrongEl = document.getElementById("wrong")
 
-// When page loads it hides the question section
-window.onload = (event) => {
-  questionHide.classList.add('hide')
-  nextBtn.classList.add('hide')
+var btnStartEl = document.querySelector("#start-game");
+var btnGoBackEl = document.querySelector("#go-back")
+var btnClearScoresEl = document.querySelector("#clear-high-scores")
+
+var questionEl = document.getElementById("question")
+var answerbuttonsEl = document.getElementById("answer-buttons")
+var timerEl = document.querySelector("#timer");
+var score = 0;
+var timeleft;
+var gameover
+timerEl.innerText = 0;
+
+
+var HighScores = [];
+
+
+var arrayShuffledQuestions
+var QuestionIndex = 0
+
+
+
+
+var questions = [
+  { q: 'Commonly used data types DO not include', 
+    a: '4. alerts', 
+    choices: [{choice: '1. numbers'}, {choice: '2. booleans'}, {choice: '3. strings'}, {choice: '4. alerts'}]
+  },
+  { q: 'The condition in an if / else statement is enclosed with _____.', 
+    a: '3. parenthesis', 
+    choices: [{choice: '1. quotes'}, {choice: '2. curley brackets'}, {choice: '3. parenthesis'}, {choice: '4. square brackets'}]
+  },
+  { q: 'Arrays in JavaScript can be used to store ______.', 
+    a: '4. all of the above', 
+    choices: [{choice: '1. numbers and strings'}, {choice: '2. other arrays'}, {choice: '3. booleans'}, {choice: '4. all of the above'}]
+  },
+  { q: 'String values must be enclosed within ____ when being assigned to variables', 
+    a: '3. quotes', 
+    choices: [{choice: '1. commas'}, {choice: '2. curly brackets'}, {choice: '3. quotes'}, {choice: '4. parethesis'}]
+  },
+  { q: 'A very useful tool used during development and debugging for printing content and debugging for printing content to the debugger is:', 
+    a: '4 console.log', 
+    choices: [{choice: '1. JavaScript'}, {choice: '2. terminal/bash'}, {choice: '3. for loops'}, {choice: '4. console.log'}]
+  }
+];
+
+
+var renderStartPage = function () {
+  containerHighScoresEl.classList.add("hide")
+  containerHighScoresEl.classList.remove("show")
+  containerStartEl.classList.remove("hide")
+  containerStartEl.classList.add("show")
+  containerScoreEl.removeChild(containerScoreEl.lastChild)
+  QuestionIndex = 0
+  gameover = ""
+  timerEl.textContent = 0 
+  score = 0
+
+  if (correctEl.className = "show") {
+      correctEl.classList.remove("show");
+      correctEl.classList.add("hide")
+  }
+  if (wrongEl.className = "show") {
+      wrongEl.classList.remove("show");
+      wrongEl.classList.add("hide");
+  }
+}
+
+
+var setTime = function () {
+  timeleft = 30;
+
+var timercheck = setInterval(function() {
+  timerEl.innerText = timeleft;
+  timeleft--
+
+  if (gameover) {
+      clearInterval(timercheck)
+  }
+ 
+  if (timeleft < 0) {
+      showScore()
+      timerEl.innerText = 0
+      clearInterval(timercheck)
+  }
+
+  }, 1000)
+}
+
+var startGame = function() {
+
+  containerStartEl.classList.add('hide');
+  containerStartEl.classList.remove('show');
+  containerQuestionEl.classList.remove('hide');
+  containerQuestionEl.classList.add('show');
+  arrayShuffledQuestions = questions.sort(() => Math.random() - 0.5)
+  setTime()
+  setQuestion()
+}
+
+var setQuestion = function() {
+  resetAnswers()
+  displayQuestion(arrayShuffledQuestions[QuestionIndex])
+}
+
+var resetAnswers = function() {
+  while (answerbuttonsEl.firstChild) {
+      answerbuttonsEl.removeChild(answerbuttonsEl.firstChild)
+  };
 };
 
-// When start button pressed 
-function startGame() {
-  timer()
-  hideOnStart()
-  questionHide.classList.remove('hide')
-  nextBtn.classList.remove('hide')
-  selectQuestion()
-  selectAnswer()
+var displayQuestion = function(index) {
+  questionEl.innerText = index.q
+  for (var i = 0; i < index.choices.length; i++) {
+      var answerbutton = document.createElement('button')
+      answerbutton.innerText = index.choices[i].choice
+      answerbutton.classList.add('btn')
+      answerbutton.classList.add('answerbtn')
+      answerbutton.addEventListener("click", answerCheck)
+      answerbuttonsEl.appendChild(answerbutton)
+      }
+  };
 
-}
+var answerCorrect = function() {
+  if (correctEl.className = "hide") {
+      correctEl.classList.remove("hide")
+      correctEl.classList.add("banner")
+      wrongEl.classList.remove("banner")
+      wrongEl.classList.add("hide")
+      }
+  }  
 
-// Initial Time display
-let timeLeft = 10
-timeEl.textContent = `Time: ${timeLeft}`
-// Function to run the timer
-function timer() {
-  function time(){ 
-    timeLeft--;
-    if (timeLeft < 0) {
-      return
-    }
-    timeEl.textContent = `Time: ${timeLeft}`
+var answerWrong = function() {
+  if (wrongEl.className = "hide") {
+      wrongEl.classList.remove("hide")
+      wrongEl.classList.add("banner")
+      correctEl.classList.remove("banner")
+      correctEl.classList.add("hide")
   }
-  timeInterval = setInterval(time, 1000)
+}
+ 
+var answerCheck = function(event) {
+  var selectedanswer = event.target
+      if (arrayShuffledQuestions[QuestionIndex].a === selectedanswer.innerText){
+          answerCorrect()
+          score = score + 10
+      }
+
+      else {
+        answerWrong()
+        score = score - 5;
+        timeleft = timeleft - 10;
+    };
+
+    QuestionIndex++
+      if  (arrayShuffledQuestions.length > QuestionIndex + 1) {
+          setQuestion()
+      }   
+      else {
+         gameover = "true";
+         showScore();
+          }
 }
 
-// When function called it adds a class with "hide" to the elements
-function hideOnStart() {
-  startPage.classList.add('hide');
-  startButton.classList.add('hide')
-}
+var showScore = function () {
+  containerQuestionEl.classList.add("hide");
+  containerEndEl.classList.remove("hide");
+  containerEndEl.classList.add("show");
 
-// Array of questions 
-const questions = [
-  {
-    question: 'What is 2 + 2?',
-    answers: [
-      { text: '4', correct: true },
-      { text: '22', correct: false },
-      { text: '44', correct: false },
-      { text: '10', correct: false }
-    ]
-  },
-  {
-    question: 'Who is the best YouTuber?',
-    answers: [
-      { text: 'Web Dev Simplified', correct: true },
-      { text: 'Traversy Media', correct: true },
-      { text: 'Dev Ed', correct: true },
-      { text: 'Fun Fun Function', correct: true }
-    ]
-  },
-  {
-    question: 'Is web development fun?',
-    answers: [
-      { text: 'Kinda', correct: false },
-      { text: 'YES!!!', correct: true },
-      { text: 'Um no', correct: false },
-      { text: 'IDK', correct: false }
-    ]
-  },
-  {
-    question: 'What is 4 * 2?',
-    answers: [
-      { text: '6', correct: false },
-      { text: '8', correct: true },
-      { text: '44', correct: false },
-      { text: '10', correct: false }
-    ]
+  var scoreDisplay = document.createElement("p");
+  scoreDisplay.innerText = ("Your final score is " + score + "!");
+  containerScoreEl.appendChild(scoreDisplay);
+}       
+
+var createHighScore = function(event) { 
+  event.preventDefault() 
+  var initials = document.querySelector("#initials").value;
+  if (!initials) {
+    alert("Enter your intials!");
+    return;
   }
-]
 
+formInitials.reset();
 
-function selectQuestion() {
-  question.textContent = questions[index].question;
+var HighScore = {
+initials: initials,
+score: score
+} 
+
+HighScores.push(HighScore);
+HighScores.sort((a, b) => {return b.score-a.score});
+
+while (listHighScoreEl.firstChild) {
+ listHighScoreEl.removeChild(listHighScoreEl.firstChild)
 }
 
-function selectAnswer() {
-  answerOne = document.querySelector('#b1')
-  answerTwo = document.querySelector('#b2')
-  answerThree = document.querySelector('#b3')
-  answerFour = document.querySelector('#b4')
-
-  answerOne.textContent = questions[index].answers[0].text
-  answerTwo.textContent = questions[index].answers[1].text
-  answerThree.textContent = questions[index].answers[2].text
-  answerFour.textContent = questions[index].answers[3].text
+for (var i = 0; i < HighScores.length; i++) {
+var highscoreEl = document.createElement("li");
+highscoreEl.ClassName = "high-score";
+highscoreEl.innerHTML = HighScores[i].initials + " - " + HighScores[i].score;
+listHighScoreEl.appendChild(highscoreEl);
 }
 
-let index = Math.floor(Math.random() * 10);
+saveHighScore();
+displayHighScores();
 
+}
+
+var saveHighScore = function () {
+  localStorage.setItem("HighScores", JSON.stringify(HighScores))
+      
+}
+
+
+var loadHighScore = function () {
+  var LoadedHighScores = localStorage.getItem("HighScores")
+      if (!LoadedHighScores) {
+      return false;
+  }
+
+  LoadedHighScores = JSON.parse(LoadedHighScores);
+  LoadedHighScores.sort((a, b) => {return b.score-a.score})
+
+
+  for (var i = 0; i < LoadedHighScores.length; i++) {
+      var highscoreEl = document.createElement("li");
+      highscoreEl.ClassName = "high-score";
+      highscoreEl.innerText = LoadedHighScores[i].initials + " - " + LoadedHighScores[i].score;
+      listHighScoreEl.appendChild(highscoreEl);
+
+      HighScores.push(LoadedHighScores[i]);
+      
+  }
+}  
+
+var displayHighScores = function() {
+
+  containerHighScoresEl.classList.remove("hide");
+  containerHighScoresEl.classList.add("show");
+  gameover = "true"
+
+  if (containerEndEl.className = "show") {
+      containerEndEl.classList.remove("show");
+      containerEndEl.classList.add("hide");
+      }
+  if (containerStartEl.className = "show") {
+      containerStartEl.classList.remove("show");
+      containerStartEl.classList.add("hide");
+      }
+      
+  if (containerQuestionEl.className = "show") {
+      containerQuestionEl.classList.remove("show");
+      containerQuestionEl.classList.add("hide");
+      }
+
+  if (correctEl.className = "show") {
+      correctEl.classList.remove("show");
+      correctEl.classList.add("hide");
+  }
+
+  if (wrongEl.className = "show") {
+      wrongEl.classList.remove("show");
+      wrongEl.classList.add("hide");
+      }
+  
+}
+
+var clearScores = function () {
+  HighScores = [];
+
+  while (listHighScoreEl.firstChild) {
+      listHighScoreEl.removeChild(listHighScoreEl.firstChild);
+  }
+
+  localStorage.clear(HighScores);
+
+} 
+
+loadHighScore()
+  
+
+btnStartEl.addEventListener("click", startGame)
+formInitials.addEventListener("submit", createHighScore)
+ViewHighScoreEl.addEventListener("click", displayHighScores)
+btnGoBackEl.addEventListener("click", renderStartPage)
+btnClearScoresEl.addEventListener("click", clearScores)
